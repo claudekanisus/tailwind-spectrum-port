@@ -84,7 +84,7 @@ const PortfolioGallery = () => {
                         alt={`${it.title} — portfolio image`}
                         loading="lazy"
                         className={
-                          `w-64 h-40 sm:w-72 sm:h-48 md:w-80 md:h-56 object-cover rounded-lg border border-border shadow-md transition-all duration-500 ${isActive ? "scale-105 opacity-100 shadow-[var(--shadow-elegant)]" : "scale-95 opacity-70"}`
+                          `w-64 h-40 sm:w-72 sm:h-48 md:w-80 md:h-56 object-contain bg-muted rounded-lg border border-border shadow-md transition-all duration-500 ${isActive ? "scale-105 opacity-100 shadow-[var(--shadow-elegant)]" : "scale-95 opacity-70"}`
                         }
                       />
                       <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-t from-background/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -128,7 +128,7 @@ const PortfolioGallery = () => {
           onClick={() => setOpen(false)}
         >
           <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
-            <img src={IMAGES[idx].src} alt={`${IMAGES[idx].title} — enlarged`} className="w-full h-auto rounded-lg" />
+            <img src={IMAGES[idx].src} alt={`${IMAGES[idx].title} — enlarged`} className="mx-auto block max-h-[75vh] w-auto h-auto rounded-lg object-contain" />
             <p className="mt-3 text-center text-foreground/80">{IMAGES[idx].title}</p>
           </div>
         </div>
