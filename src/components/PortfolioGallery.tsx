@@ -72,7 +72,7 @@ const PortfolioGallery = () => {
                     style={{ transform: `rotateY(${angle}deg) translateZ(${radius}px)` }}
                   >
                     <button
-                      className="relative -translate-x-1/2 -translate-y-1/2 transform group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg"
+                      className={`relative -translate-x-1/2 -translate-y-1/2 transform group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg grid place-items-center w-64 h-40 sm:w-72 sm:h-48 md:w-80 md:h-56 bg-muted border border-border shadow-md transition-all duration-500 ${isActive ? "scale-105 opacity-100 shadow-[var(--shadow-elegant)]" : "scale-95 opacity-70"}`}
                       onClick={() => {
                         setIdx(i);
                         setOpen(true);
@@ -83,9 +83,7 @@ const PortfolioGallery = () => {
                         src={it.src}
                         alt={`${it.title} — portfolio image`}
                         loading="lazy"
-                        className={
-                          `w-64 h-40 sm:w-72 sm:h-48 md:w-80 md:h-56 object-contain object-center bg-muted rounded-lg border border-border shadow-md transition-all duration-500 ${isActive ? "scale-105 opacity-100 shadow-[var(--shadow-elegant)]" : "scale-95 opacity-70"}`
-                        }
+                        className="max-w-full max-h-full object-contain object-center"
                       />
                       <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-t from-background/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-medium text-foreground/80 whitespace-nowrap">
