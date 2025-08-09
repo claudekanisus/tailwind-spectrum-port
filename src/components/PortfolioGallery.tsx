@@ -21,6 +21,7 @@ const PortfolioGallery = () => {
   const [idx, setIdx] = useState<number | null>(null);
   const [current, setCurrent] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -34,6 +35,14 @@ const PortfolioGallery = () => {
     };
   }, [carouselApi]);
 
+  useEffect(() => {
+    if (!carouselApi || isPaused || open) return;
+    const id = window.setInterval(() => {
+      carouselApi.scrollNext();
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, [carouselApi, isPaused, open]);
+
   return (
     <section id="work" className="container scroll-mt-24 py-20">
       <div className="max-w-3xl mx-auto text-center">
@@ -42,32 +51,43 @@ const PortfolioGallery = () => {
       </div>
 
       <div className="mt-10">
-        <Carousel setApi={setCarouselApi} opts={{ align: "start", loop: true }} className="relative mx-auto max-w-6xl">
+        <Carousel
+          setApi={setCarouselApi}
+          opts={{ align: "center", loop: true }}
+          className="relative mx-auto max-w-6xl animate-fade-in"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onPointerDown={() => setIsPaused(true)}
+          onPointerUp={() => setIsPaused(false)}
+        >
           <CarouselContent>
-            {IMAGES.map((it, i) => (
-              <CarouselItem key={i} className="basis-full sm:basis-1/2 lg:basis-1/3">
-                <button
-                  className="group block w-full rounded-lg border border-border bg-muted shadow-md transition-all hover-scale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                  onClick={() => {
-                    setIdx(i);
-                    setOpen(true);
-                  }}
-                  aria-label={`Open ${it.title}`}
-                >
-                  <div className="aspect-[4/3] w-full grid place-items-center rounded-lg overflow-hidden">
-                    <img
-                      src={it.src}
-                      alt={`${it.title} — portfolio image`}
-                      loading="lazy"
-                      className="max-w-full max-h-full object-contain object-center"
-                    />
-                  </div>
-                  <div className="pointer-events-none p-3 text-center text-sm font-medium text-foreground/80">
-                    {it.title}
-                  </div>
-                </button>
-              </CarouselItem>
-            ))}
+            {IMAGES.map((it, i) => {
+              const isActive = i === current;
+              return (
+                <CarouselItem key={i} className="basis-full sm:basis-1/2 lg:basis-1/3">
+                  <button
+                    className={`group block w-full rounded-lg border border-border bg-muted shadow-md transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand hover:-translate-y-0.5 ${isActive ? 'opacity-100 scale-[1.01] shadow-[var(--shadow-elegant)]' : 'opacity-80 scale-[0.98]'}`}
+                    onClick={() => {
+                      setIdx(i);
+                      setOpen(true);
+                    }}
+                    aria-label={`Open ${it.title}`}
+                  >
+                    <div className="aspect-[4/3] w-full grid place-items-center rounded-lg overflow-hidden">
+                      <img
+                        src={it.src}
+                        alt={`${it.title} — portfolio image`}
+                        loading="lazy"
+                        className="max-w-full max-h-full object-contain object-center"
+                      />
+                    </div>
+                    <div className="pointer-events-none p-3 text-center text-sm font-medium text-foreground/80">
+                      {it.title}
+                    </div>
+                  </button>
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <CarouselPrevious />
           <CarouselNext />
