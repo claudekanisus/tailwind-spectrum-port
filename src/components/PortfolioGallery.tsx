@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import img1 from "@/assets/portfolio-1.jpg";
 import img2 from "@/assets/portfolio-2.jpg";
 import img3 from "@/assets/portfolio-3.jpg";
@@ -16,18 +16,64 @@ const IMAGES = [
   { src: img6, title: "Concept UI" },
 ];
 
+type Point3D = { x: number; y: number; z: number };
+
+// Evenly distribute points on a sphere using the Fibonacci sphere algorithm
+function fibonacciSphere(n: number): Point3D[] {
+  const points: Point3D[] = [];
+  const offset = 2 / n;
+  const increment = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+  for (let i = 0; i < n; i++) {
+    const y = i * offset - 1 + offset / 2; // y in [-1, 1]
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const phi = i * increment;
+    const x = Math.cos(phi) * r;
+    const z = Math.sin(phi) * r;
+    points.push({ x, y, z });
+  }
+  return points;
+}
+
 const PortfolioGallery = () => {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState<number | null>(null);
-  const [current, setCurrent] = useState(0);
+  const [rotY, setRotY] = useState(0); // horizontal rotation (deg)
+  const [rotX, setRotX] = useState(-10); // vertical rotation (deg)
   const [radius, setRadius] = useState(360);
-  const step = 360 / IMAGES.length;
+
+  const points = useMemo(() => fibonacciSphere(IMAGES.length), []);
+  const step = 15; // rotation step in degrees
+
+  // Compute the index of the image most facing the camera (largest z after rotation)
+  const activeIndex = useMemo(() => {
+    const ax = (rotX * Math.PI) / 180;
+    const ay = (rotY * Math.PI) / 180;
+    let maxZ = -Infinity;
+    let maxI = 0;
+    for (let i = 0; i < points.length; i++) {
+      const { x, y, z } = points[i];
+      // Rotate around X
+      const y1 = y * Math.cos(ax) - z * Math.sin(ax);
+      const z1 = y * Math.sin(ax) + z * Math.cos(ax);
+      const x1 = x;
+      // Rotate around Y
+      const x2 = x1 * Math.cos(ay) + z1 * Math.sin(ay);
+      const z2 = -x1 * Math.sin(ay) + z1 * Math.cos(ay);
+      if (z2 > maxZ) {
+        maxZ = z2;
+        maxI = i;
+      }
+    }
+    return maxI;
+  }, [points, rotX, rotY]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
-      if (e.key === "ArrowLeft") setCurrent((c) => (c - 1 + IMAGES.length) % IMAGES.length);
-      if (e.key === "ArrowRight") setCurrent((c) => (c + 1) % IMAGES.length);
+      if (e.key === "ArrowLeft") setRotY((r) => r - step);
+      if (e.key === "ArrowRight") setRotY((r) => r + step);
+      if (e.key === "ArrowUp") setRotX((r) => Math.max(r - step, -80));
+      if (e.key === "ArrowDown") setRotX((r) => Math.min(r + step, 80));
     };
     const onResize = () => {
       const r = Math.max(220, Math.min(420, Math.floor(window.innerWidth * 0.35)));
@@ -55,21 +101,21 @@ const PortfolioGallery = () => {
             <div
               className="absolute inset-0 [transform-style:preserve-3d] will-change-transform"
               style={{
-                transform: `rotateY(${-current * step}deg)`,
+                transform: `rotateX(${rotX}deg) rotateY(${rotY}deg)`,
                 transition: "transform 700ms cubic-bezier(0.22,1,0.36,1)",
               }}
               aria-live="polite"
-              aria-label="3D image carousel"
+              aria-label="3D sphere image carousel"
             >
-              {IMAGES.map((it, i) => {
-                const angle = i * step;
-                const activeIndex = ((current % IMAGES.length) + IMAGES.length) % IMAGES.length;
-                const isActive = i === activeIndex;
+              {points.map((p, i) => {
+                const tx = p.x * radius;
+                const ty = p.y * radius;
+                const tz = p.z * radius;
                 return (
                   <div
                     key={i}
                     className="absolute left-1/2 top-1/2 [transform-style:preserve-3d]"
-                    style={{ transform: `rotateY(${angle}deg) translateZ(${radius}px)` }}
+                    style={{ transform: `translate3d(${tx}px, ${ty}px, ${tz}px)` }}
                   >
                     <button
                       className="relative -translate-x-1/2 -translate-y-1/2 transform group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg"
@@ -77,19 +123,17 @@ const PortfolioGallery = () => {
                         setIdx(i);
                         setOpen(true);
                       }}
-                      aria-label={`Open ${it.title}`}
+                      aria-label={`Open ${IMAGES[i].title}`}
                     >
                       <img
-                        src={it.src}
-                        alt={`${it.title} — portfolio image`}
+                        src={IMAGES[i].src}
+                        alt={`${IMAGES[i].title} — portfolio image`}
                         loading="lazy"
-                        className={
-                          `w-64 h-40 sm:w-72 sm:h-48 md:w-80 md:h-56 object-contain bg-muted rounded-lg border border-border shadow-md transition-all duration-500 ${isActive ? "scale-105 opacity-100 shadow-[var(--shadow-elegant)]" : "scale-95 opacity-70"}`
-                        }
+                        className="w-40 h-28 sm:w-44 sm:h-32 md:w-48 md:h-36 object-contain bg-muted rounded-lg border border-border shadow-md transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-t from-background/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-medium text-foreground/80 whitespace-nowrap">
-                        {it.title}
+                        {IMAGES[i].title}
                       </span>
                     </button>
                   </div>
@@ -97,28 +141,51 @@ const PortfolioGallery = () => {
               })}
             </div>
 
+            {/* Horizontal controls */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-2">
               <div className="pointer-events-auto">
                 <button
-                  onClick={() => setCurrent((c) => (c - 1 + IMAGES.length) % IMAGES.length)}
+                  onClick={() => setRotY((r) => r - step)}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                  aria-label="Previous slide"
+                  aria-label="Rotate left"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
               </div>
               <div className="pointer-events-auto">
                 <button
-                  onClick={() => setCurrent((c) => (c + 1) % IMAGES.length)}
+                  onClick={() => setRotY((r) => r + step)}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                  aria-label="Next slide"
+                  aria-label="Rotate right"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
             </div>
+
+            {/* Vertical controls */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-between py-2">
+              <div className="pointer-events-auto">
+                <button
+                  onClick={() => setRotX((r) => Math.max(r - step, -80))}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  aria-label="Rotate up"
+                >
+                  <ChevronUp className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="pointer-events-auto">
+                <button
+                  onClick={() => setRotX((r) => Math.min(r + step, 80))}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  aria-label="Rotate down"
+                >
+                  <ChevronDown className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
           </div>
-          <p className="mt-6 text-center text-foreground/70">{IMAGES[((current % IMAGES.length) + IMAGES.length) % IMAGES.length].title}</p>
+          <p className="mt-6 text-center text-foreground/70">{IMAGES[activeIndex].title}</p>
         </div>
       </div>
 
