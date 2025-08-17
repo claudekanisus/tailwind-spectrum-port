@@ -32,7 +32,12 @@ const Contact = () => {
     <section id="contact" className="container scroll-mt-24 py-20">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-semibold">Contact</h2>
-        <p className="mt-3 text-foreground/70">Have a project in mind? Let’s talk.</p>
+        <p className="mt-3 text-foreground/70">Ready to collaborate on your next digital project?</p>
+        <div className="mt-4 space-y-2 text-sm text-foreground/60">
+          <p>📍 Pinner, London - United Kingdom</p>
+          <p>📧 claudekanisus@gmail.com</p>
+          <p>📞 07547399562</p>
+        </div>
       </div>
 
       <form onSubmit={onSubmit} noValidate className="mt-10 max-w-2xl mx-auto grid gap-4">

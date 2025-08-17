@@ -1,13 +1,13 @@
-import { Code2, Palette, Smartphone } from "lucide-react";
+import { Code2, Database, Globe } from "lucide-react";
 
 const items = [
   {
     icon: Code2,
-    title: "Frontend Engineering",
-    desc: "Clean, accessible interfaces with TypeScript and modern tooling.",
+    title: "Web Development",
+    desc: "Full-stack development using ReactJs, JavaScript, PHP, and modern frameworks.",
   },
-  { icon: Palette, title: "Product Design", desc: "Systems, flows, and pixels that feel effortless." },
-  { icon: Smartphone, title: "Responsive Apps", desc: "Fast experiences across devices and screens." },
+  { icon: Database, title: "Content Management", desc: "Expert in Drupal, SharePoint, Sitecore, and Salesforce platforms." },
+  { icon: Globe, title: "Digital Transformation", desc: "Leading digital initiatives and cloud computing solutions." },
 ];
 
 const Services = () => {

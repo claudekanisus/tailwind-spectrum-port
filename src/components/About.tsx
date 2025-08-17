@@ -45,15 +45,14 @@ const SkillBar = ({ label, level }: SkillBarProps) => {
 };
 
 const About = () => {
-  const skills = ["React", "TypeScript", "Tailwind", "UX", "Accessibility", "Animations"];
+  const skills = ["ReactJs", "JavaScript", "PHP", "MySQL", "TailwindCSS", "HTML/CSS", "Drupal", "SharePoint", "Sitecore", "Salesforce", "JIRA", "Git"];
 
   return (
     <section id="about" className="container scroll-mt-24 py-20">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-semibold">About Me</h2>
         <p className="mt-4 text-foreground/70">
-          I craft clean, minimal, and performant user interfaces. I value clarity, motion, and
-          accessibility — transforming ideas into delightful experiences.
+          Experienced and adaptable technology professional with a solid foundation in web development, digital transformation, and project management. I demonstrate a proven ability to build relationships, communicate effectively, and work both independently and as part of cross-functional teams.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           {skills.map((s) => (
@@ -65,10 +64,10 @@ const About = () => {
       </div>
 
       <div className="mt-12 grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-        <SkillBar label="Frontend" level={92} />
-        <SkillBar label="Design Systems" level={88} />
-        <SkillBar label="Animations" level={84} />
-        <SkillBar label="Accessibility" level={90} />
+        <SkillBar label="Web Development" level={95} />
+        <SkillBar label="Content Management" level={92} />
+        <SkillBar label="Digital Transformation" level={90} />
+        <SkillBar label="Project Management" level={88} />
       </div>
     </section>
   );

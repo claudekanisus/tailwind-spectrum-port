@@ -31,10 +31,10 @@ const Hero = () => {
       <div className="container relative z-10 text-center animate-fade-in">
         <p className="text-sm tracking-widest text-foreground/60">PORTFOLIO</p>
         <h1 className="mt-3 text-4xl md:text-6xl font-bold">
-          Alex Doe — Minimal Dark Portfolio
+          Claude Raphiel — Technology Professional
         </h1>
         <p className="mt-4 text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto">
-          Designer & developer crafting elegant, performant digital experiences.
+          Experienced web developer and digital transformation specialist with expertise in modern technologies and content management systems.
         </p>
         <div className="mt-8 flex items-center justify-center gap-4">
           <Button asChild variant="gradient" className="hover-scale">
